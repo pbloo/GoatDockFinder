@@ -46,7 +46,7 @@ dotnet test tests/GoatDockFinder.Tests/GoatDockFinder.Tests.csproj -c Release --
 .\build_release.ps1
 ```
 
-Publica GoatDock e GoatFinder, empacota `dock.zip` e `finder.zip` dentro do instalador e grava `release/GoatDockFinder-Setup.exe`. Para assinar, use `-Assinar -CertificadoThumbprint <hash> -SignToolPath <signtool.exe> -TimestampUrl <url>` (certificado RSA de assinatura de código).
+Publica GoatDock e GoatFinder, empacota `dock.zip` e `finder.zip` dentro do instalador e grava `release/GoatDockFinder-Setup.exe`. Para assinar (veja [docs/ASSINATURA-DIGITAL.md](docs/ASSINATURA-DIGITAL.md)), use `-Assinar -CertificadoThumbprint <hash> -SignToolPath <signtool.exe> -TimestampUrl <url>` (certificado RSA de assinatura de código).
 
 ## Arquitetura
 
@@ -64,7 +64,12 @@ GoatDockFinder
 
 ## Documentação
 
+- [docs/TESTAR-LOCALMENTE.md](docs/TESTAR-LOCALMENTE.md): como testar sem instalar.
+- [docs/PUBLICAR.md](docs/PUBLICAR.md): GitHub, release e site na Vercel.
+- [docs/ASSINATURA-DIGITAL.md](docs/ASSINATURA-DIGITAL.md): como assinar o instalador.
 - [AGENTS.md](AGENTS.md): regras de trabalho e estrutura.
+- [CONTRIBUTING.md](CONTRIBUTING.md), [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) e [SECURITY.md](SECURITY.md).
+- [vercel/](vercel/): site de apresentação.
 - [CHANGELOG.md](CHANGELOG.md): o que mudou.
 - [docs/adr/](docs/adr/): decisões de arquitetura.
 - [docs/product/roadmap.md](docs/product/roadmap.md): entregue, próximos passos, custos e riscos.
