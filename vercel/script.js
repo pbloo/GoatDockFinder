@@ -1,7 +1,7 @@
 "use strict";
 // Endereço do repositório no GitHub (ex.: "https://github.com/seu-usuario/GoatDockFinder").
 // Vazio, os links para o GitHub ficam escondidos em vez de apontar para um endereço inventado.
-const REPO_URL = "https://github.com/pbloo/GoatDockFinder.git";
+const REPO_URL = "https://github.com/pbloo/GoatDockFinder";
 
 const widgets = [
     [
@@ -321,7 +321,7 @@ function configureRepoLinks() {
             return;
         }
         const path = link.dataset.repo;
-        link.href = REPO_URL.replace(/\/$/, "") + path;
+        link.href = REPO_URL.replace(/\/$/, "").replace(/\.git$/, "") + path;
         link.target = "_blank";
         link.rel = "noopener noreferrer";
     });
