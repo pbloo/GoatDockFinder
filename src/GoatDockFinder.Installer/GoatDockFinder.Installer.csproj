@@ -1,0 +1,29 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows10.0.19041.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+    <ApplicationIcon>..\..\assets\goatdockfinder.ico</ApplicationIcon>
+    <AssemblyName>GoatDockFinder-Setup</AssemblyName>
+    <RootNamespace>GoatDockFinder.Installer</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Resource Include="..\..\assets\goatdockfinder.ico" Link="Assets\goatdockfinder.ico" />
+    <ProjectReference Include="..\GoatDock.Core\GoatDock.Core.csproj" />
+    <ProjectReference Include="..\Goat.Shared\Goat.Shared.csproj" />
+    <ProjectReference Include="..\Goat.Platform\Goat.Platform.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\dock.zip" Condition="Exists('Resources\dock.zip')" />
+    <EmbeddedResource Include="Resources\finder.zip" Condition="Exists('Resources\finder.zip')" />
+  </ItemGroup>
+
+</Project>
+
+
+

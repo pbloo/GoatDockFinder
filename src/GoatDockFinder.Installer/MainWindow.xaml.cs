@@ -1,0 +1,306 @@
+using System;
+using System.Diagnostics;
+using System.IO;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Media;
+using Goat.Platform.Windows;
+using Goat.Shared.Product;
+using GoatDockFinder.Installer.Services;
+
+namespace GoatDockFinder.Installer;
+
+public partial class MainWindow : Window
+{
+    private readonly InstallService _installService;
+    private readonly bool _modoDesinstalacao;
+    private string _pastaInstalacao;
+
+    private enum EstadoWizard
+    {
+        Opcoes,
+        Progresso,
+        Concluido
+    }
+
+    private EstadoWizard _estadoAtual = EstadoWizard.Opcoes;
+
+    public MainWindow()
+    {
+        InitializeComponent();
+
+        _installService = new InstallService();
+        _pastaInstalacao = _installService.ObterDiretorioInstalacaoPadrao();
+        TxtCaminhoDestino.Text = _pastaInstalacao;
+
+        var args = Environment.GetCommandLineArgs();
+        _modoDesinstalacao = Array.Exists(args, a => a.Equals("--uninstall", StringComparison.OrdinalIgnoreCase) || a.Equals("/uninstall", StringComparison.OrdinalIgnoreCase));
+
+        ConfigurarInterfaceInicial();
+        CarregarPersonalizacoes();
+        Closing += (_, e) => { if (_estadoAtual == EstadoWizard.Progresso) e.Cancel = true; };
+        Loaded += (_, _) =>
+        {
+            Width = Math.Max(MinWidth, Math.Min(Width, SystemParameters.WorkArea.Width - 32));
+            Height = Math.Max(MinHeight, Math.Min(Height, SystemParameters.WorkArea.Height - 32));
+        };
+    }
+
+    private void ConfigurarInterfaceInicial()
+    {
+        if (_modoDesinstalacao)
+        {
+            Title = "Desinstalador do GoatDockFinder";
+            TxtTituloCabecalho.Text = "GoatDockFinder — Assistente de Desinstalação";
+            TxtSubtituloCabecalho.Text = "Remoção segura e restauração do Windows";
+
+            PanelOpcoesInstalacao.Visibility = Visibility.Collapsed;
+            PanelDesinstalacao.Visibility = Visibility.Visible;
+            PanelProgresso.Visibility = Visibility.Collapsed;
+            PanelConcluido.Visibility = Visibility.Collapsed;
+
+            BtnAcaoPrincipal.Content = "Desinstalar";
+            BtnAcaoPrincipal.Background = new SolidColorBrush(Color.FromRgb(255, 69, 58));
+        }
+        else
+        {
+            bool ehAtualizacao = _installService.DetectarInstalacaoExistente(out var versaoInstalada, out var pastaInstalada, out bool iniciaComWindows);
+
+            if (ehAtualizacao)
+            {
+                _pastaInstalacao = pastaInstalada;
+                TxtCaminhoDestino.Text = _pastaInstalacao;
+                ChkIniciarComWindows.IsChecked = iniciaComWindows;
+
+                // Reabrir o instalador sobre uma instalação existente mostra o que já está instalado (modo Modificar).
+                var instalados = _installService.ComponentesInstalados(pastaInstalada);
+                if (instalados.Count > 0)
+                {
+                    ChkDock.IsChecked = instalados.Contains(ComponentId.Dock);
+                    ChkFinder.IsChecked = instalados.Contains(ComponentId.Finder);
+                }
+
+                Title = "Atualizador do GoatDockFinder";
+                TxtTituloCabecalho.Text = "GoatDockFinder — Assistente de Atualização";
+                TxtSubtituloCabecalho.Text = $"Versão {versaoInstalada} detectada -> Atualizar para {InstallService.CurrentVersion}";
+
+                TxtTituloCabecalho.Text = "Atualização do Aplicativo";
+                TxtDescricaoAcao.Text = "Uma instalação anterior do GoatDockFinder foi detectada. Seus ambientes, atalhos e preferências serão totalmente preservados.";
+                BtnAcaoPrincipal.Content = "Atualizar Agora";
+            }
+            else
+            {
+                Title = "Instalador do GoatDockFinder";
+                TxtTituloCabecalho.Text = "GoatDockFinder — Assistente de Instalação";
+                TxtSubtituloCabecalho.Text = $"Versão {InstallService.CurrentVersion} (Windows 10/11 x64)";
+
+                TxtTituloCabecalho.Text = "Instalação do Aplicativo";
+                TxtDescricaoAcao.Text = "O GoatDockFinder será instalado localmente no perfil do seu usuário sem exigir privilégios de administrador.";
+                BtnAcaoPrincipal.Content = "Instalar";
+            }
+
+            PanelOpcoesInstalacao.Visibility = Visibility.Visible;
+            PanelDesinstalacao.Visibility = Visibility.Collapsed;
+            PanelProgresso.Visibility = Visibility.Collapsed;
+            PanelConcluido.Visibility = Visibility.Collapsed;
+        }
+    }
+
+    private HashSet<ComponentId> ComponentesSelecionados()
+    {
+        var selecionados = new HashSet<ComponentId>();
+        if (ChkDock.IsChecked == true) selecionados.Add(ComponentId.Dock);
+        if (ChkFinder.IsChecked == true) selecionados.Add(ComponentId.Finder);
+        return selecionados;
+    }
+
+    // Sem componente escolhido não há o que instalar.
+    private void OnComponenteAlterado(object sender, RoutedEventArgs e)
+    {
+        if (BtnAcaoPrincipal == null || _estadoAtual != EstadoWizard.Opcoes) return;
+        BtnAcaoPrincipal.IsEnabled = ComponentesSelecionados().Count > 0;
+    }
+
+    private void CarregarPersonalizacoes()
+    {
+        foreach (var tweak in WindowsTweakService.Catalog)
+        {
+            PanelPersonalizacoes.Children.Add(new System.Windows.Controls.CheckBox
+            {
+                Content = tweak.Title,
+                Tag = tweak.Id,
+                ToolTip = tweak.Description,
+                IsChecked = false,
+            });
+        }
+    }
+
+    private List<string> PersonalizacoesSelecionadas() => PanelPersonalizacoes.Children
+        .OfType<System.Windows.Controls.CheckBox>()
+        .Where(c => c.IsChecked == true && c.Tag is string)
+        .Select(c => (string)c.Tag)
+        .ToList();
+
+    private void DragWindow(object sender, System.Windows.Input.MouseButtonEventArgs e) { if (e.LeftButton == System.Windows.Input.MouseButtonState.Pressed) DragMove(); }        private void BtnSair_Click(object sender, RoutedEventArgs e) { Close(); }
+
+        private async void BtnAcaoPrincipal_Click(object sender, RoutedEventArgs e)
+    {
+        if (_modoDesinstalacao)
+        {
+            await ExecutarDesinstalacaoAsync();
+        }
+        else
+        {
+            if (_estadoAtual == EstadoWizard.Opcoes)
+            {
+                await ExecutarInstalacaoAsync();
+            }
+            else if (_estadoAtual == EstadoWizard.Concluido)
+            {
+                if (ChkExecutarAgora.IsChecked == true)
+                {
+                    try
+                    {
+                        foreach (var componente in ComponentesSelecionados().OrderBy(c => c))
+                        {
+                            var exePath = InstallService.ExeDoComponente(_pastaInstalacao, componente);
+                            if (!File.Exists(exePath)) continue;
+                            Process.Start(new ProcessStartInfo
+                            {
+                                FileName = exePath,
+                                WorkingDirectory = Path.GetDirectoryName(exePath),
+                                UseShellExecute = true
+                            });
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(this, $"O GoatDockFinder foi instalado, mas não foi possível iniciá-lo: {ex.Message}", "Abrir GoatDockFinder", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    }
+                }
+                Close();
+            }
+        }
+    }
+
+    private async Task ExecutarInstalacaoAsync()
+    {
+        _estadoAtual = EstadoWizard.Progresso;
+
+        PanelOpcoesInstalacao.Visibility = Visibility.Collapsed;
+        PanelProgresso.Visibility = Visibility.Visible;
+        BtnCancelar.Visibility = Visibility.Collapsed;
+        BtnAcaoPrincipal.IsEnabled = false;
+
+        bool criarIniciar = ChkAtalhoIniciar.IsChecked == true;
+        bool criarDesktop = ChkAtalhoDesktop.IsChecked == true;
+        bool autostart = ChkIniciarComWindows.IsChecked == true;
+
+        bool sucesso = false;
+        string? erroDetalhado = null;
+
+        var opcoes = new InstallOptions(_pastaInstalacao, ComponentesSelecionados(), criarIniciar, criarDesktop, autostart, PersonalizacoesSelecionadas());
+
+        await Task.Run(() =>
+        {
+            sucesso = _installService.ExecutarInstalacao(
+                opcoes,
+                notificarProgresso: msg =>
+                {
+                    Dispatcher.Invoke(() =>
+                    {
+                        TxtStatusProgresso.Text = msg;
+                    });
+                },
+                out erroDetalhado);
+        });
+
+        if (sucesso)
+        {
+            _estadoAtual = EstadoWizard.Concluido;
+            PanelProgresso.Visibility = Visibility.Collapsed;
+            PanelConcluido.Visibility = Visibility.Visible;
+
+            bool foiAtualizacao = _installService.DetectarInstalacaoExistente(out _, out _, out _);
+            if (foiAtualizacao)
+            {
+                TxtTituloConcluido.Text = "Atualização Concluída com Sucesso!";
+                TxtSubtituloConcluido.Text = $"O GoatDockFinder foi atualizado para a versão {InstallService.CurrentVersion} com todas as suas preferências preservadas.";
+            }
+
+            BtnAcaoPrincipal.Content = "Concluir";
+            BtnAcaoPrincipal.IsEnabled = true;
+            BtnAcaoPrincipal.Background = new SolidColorBrush(Color.FromRgb(48, 209, 88));
+        }
+        else
+        {
+            var msgExibir = !string.IsNullOrWhiteSpace(erroDetalhado)
+                ? $"Ocorreu um erro durante a instalação:\n\n{erroDetalhado}\n\nVerifique se o aplicativo não está em execução ou permissões de pasta."
+                : "Ocorreu um erro durante a instalação. Verifique se o aplicativo não está em execução ou permissões de pasta.";
+
+            MessageBox.Show(this, msgExibir, "Erro na Instalação", MessageBoxButton.OK, MessageBoxImage.Error);
+            BtnCancelar.Visibility = Visibility.Visible;
+            BtnAcaoPrincipal.IsEnabled = true;
+            BtnAcaoPrincipal.Content = "Tentar Novamente";
+            _estadoAtual = EstadoWizard.Opcoes;
+            PanelProgresso.Visibility = Visibility.Collapsed;
+            PanelOpcoesInstalacao.Visibility = Visibility.Visible;
+        }
+    }
+
+    private async Task ExecutarDesinstalacaoAsync()
+    {
+        var resultado = MessageBox.Show(this,
+            "Deseja realmente prosseguir com a desinstalação do GoatDockFinder?",
+            "Confirmar Desinstalação",
+            MessageBoxButton.YesNo,
+            MessageBoxImage.Question);
+
+        if (resultado != MessageBoxResult.Yes)
+        {
+            return;
+        }
+
+        _estadoAtual = EstadoWizard.Progresso;
+        PanelDesinstalacao.Visibility = Visibility.Collapsed;
+        PanelProgresso.Visibility = Visibility.Visible;
+        BtnCancelar.Visibility = Visibility.Collapsed;
+        BtnAcaoPrincipal.IsEnabled = false;
+
+        bool removerDados = ChkRemoverDadosPessoais.IsChecked == true;
+        bool sucesso = false;
+
+        await Task.Run(() =>
+        {
+            sucesso = _installService.ExecutarDesinstalacao(
+                removerDados,
+                notificarProgresso: msg =>
+                {
+                    Dispatcher.Invoke(() =>
+                    {
+                        TxtStatusProgresso.Text = msg;
+                    });
+                });
+        });
+
+        _estadoAtual = sucesso ? EstadoWizard.Concluido : EstadoWizard.Opcoes;
+        if (sucesso)
+        {
+            MessageBox.Show(this, "GoatDockFinder foi desinstalado com sucesso do seu computador.\nA barra de tarefas nativa do Windows foi restaurada.", "Desinstalação Concluída", MessageBoxButton.OK, MessageBoxImage.Information);
+            Close();
+        }
+        else
+        {
+            MessageBox.Show(this, "Houve um problema durante a desinstalação de alguns arquivos.", "Aviso", MessageBoxButton.OK, MessageBoxImage.Warning);
+            Close();
+        }
+    }
+
+    private void BtnCancelar_Click(object sender, RoutedEventArgs e)
+    {
+        Close();
+    }
+}
+
+
+

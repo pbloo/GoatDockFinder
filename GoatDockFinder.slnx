@@ -1,0 +1,15 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Goat.Shared/Goat.Shared.csproj" />
+    <Project Path="src/Goat.Platform/Goat.Platform.csproj" />
+    <Project Path="src/Goat.Ui/Goat.Ui.csproj" />
+    <Project Path="src/GoatDock.Core/GoatDock.Core.csproj" />
+    <Project Path="src/GoatDock/GoatDock.csproj" />
+    <Project Path="src/GoatFinder.Core/GoatFinder.Core.csproj" />
+    <Project Path="src/GoatFinder/GoatFinder.csproj" />
+    <Project Path="src/GoatDockFinder.Installer/GoatDockFinder.Installer.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/GoatDockFinder.Tests/GoatDockFinder.Tests.csproj" />
+  </Folder>
+</Solution>

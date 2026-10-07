@@ -1,0 +1,38 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0-windows10.0.19041.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <IsPackable>false</IsPackable>
+    <UseWPF>true</UseWPF>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="coverlet.collector" Version="6.0.4" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
+    <PackageReference Include="xunit" Version="2.9.3" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="3.1.4" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="Xunit" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Goat.Shared\Goat.Shared.csproj" />
+    <ProjectReference Include="..\..\src\Goat.Platform\Goat.Platform.csproj" />
+    <ProjectReference Include="..\..\src\Goat.Ui\Goat.Ui.csproj" />
+    <ProjectReference Include="..\..\src\GoatDock.Core\GoatDock.Core.csproj" />
+    <ProjectReference Include="..\..\src\GoatFinder.Core\GoatFinder.Core.csproj" />
+    <ProjectReference Include="..\..\src\GoatDockFinder.Installer\GoatDockFinder.Installer.csproj" />
+    <ProjectReference Include="..\..\src\GoatDock\GoatDock.csproj" />
+    <ProjectReference Include="..\..\src\GoatFinder\GoatFinder.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="Goat.Shared.Windows" />
+    <Using Include="GoatDock.Platform" />
+  </ItemGroup>
+
+</Project>

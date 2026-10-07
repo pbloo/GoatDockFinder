@@ -1,0 +1,8 @@
+﻿<UserControl xmlns:atividade="clr-namespace:GoatDock.Common" atividade:AtividadeVisual.Componente="Monitor" x:Class="GoatDock.Views.Sections.SectionMonitorInline"
+ xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:models="clr-namespace:GoatDock.Core.Models;assembly=GoatDock.Core" xmlns:controls="clr-namespace:GoatDock.Controls" Margin="4,0">
+ <UserControl.ContextMenu><ContextMenu DataContext="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource Self}}"><MenuItem Header="Personalizar&#x2026;" Command="{Binding PersonalizarWidgetCommand}" CommandParameter="{x:Static models:TipoWidget.MonitorSistema}"/></ContextMenu></UserControl.ContextMenu>
+
+ <Viewbox MaxHeight="{Binding AlturaBarra}" StretchDirection="DownOnly">
+  <controls:IndicadorSistemaControl Width="{Binding MonitorSistema.Largura}" Height="60" Estilo="{Binding MonitorSistema.Estilo}" Titulo="{Binding MonitorSistema.Titulo}" Texto="{Binding MonitorSistema.TextoValor}" Secundario="{Binding MonitorSistema.TextoSecundario}" Valor="{Binding MonitorSistema.Valor}" Serie="{Binding MonitorSistema.Historico}" SerieSecundaria="{Binding MonitorSistema.HistoricoSecundario}" ToolTip="{Binding MonitorSistema.Descricao}" AutomationProperties.Name="{Binding MonitorSistema.TextoValor}"/>
+ </Viewbox>
+</UserControl>

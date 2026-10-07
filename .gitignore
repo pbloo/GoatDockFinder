@@ -1,0 +1,46 @@
+# Build, distribuição e resultados gerados
+**/bin/
+**/obj/
+/dist/
+/release/
+/src/GoatDockFinder.Installer/Resources/*.zip
+**/TestResults/
+BenchmarkDotNet.Artifacts/
+packages/
+*.nupkg
+*.pdb
+
+# Preferências locais e ferramentas de desenvolvimento
+.vs/
+.vscode/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+*.log
+*.tmp
+*.temp
+*.cache
+*.db
+*.db-shm
+*.db-wal
+Thumbs.db
+Desktop.ini
+.DS_Store
+__pycache__/
+*.pyc
+/tools/legacy/
+/prompts/
+
+# Credenciais e dados privados
+.env
+.env.*
+!.env.example
+*.pfx
+*.p12
+*.pem
+*.key
+/settings.json
+/notas.txt
+
+/docs/installer-validation.json

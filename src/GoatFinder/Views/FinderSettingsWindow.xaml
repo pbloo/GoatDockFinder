@@ -1,0 +1,472 @@
+<Window x:Class="GoatFinder.Views.FinderSettingsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Configurações do GoatFinder"
+        Width="640"
+        Height="720"
+        MinWidth="520"
+        MinHeight="480"
+        WindowStartupLocation="CenterScreen"
+        Background="{StaticResource Win.Bg}"
+        Foreground="{StaticResource Win.Fg}"
+        FontFamily="{StaticResource UiFont}"
+        FontSize="13">
+    <Window.Resources>
+        <Style TargetType="TextBlock">
+            <Setter Property="Foreground"
+                    Value="{StaticResource Win.Fg}"/>
+        </Style>
+        <Style TargetType="CheckBox">
+            <Setter Property="Foreground"
+                    Value="{StaticResource Win.Fg}"/>
+            <Setter Property="Margin"
+                    Value="0,4"/>
+        </Style>
+        <Style TargetType="TextBox">
+            <Setter Property="Background"
+                    Value="{StaticResource Win.Toolbar}"/>
+            <Setter Property="Foreground"
+                    Value="{StaticResource Win.Fg}"/>
+            <Setter Property="BorderBrush"
+                    Value="{StaticResource Win.Border}"/>
+            <Setter Property="CaretBrush"
+                    Value="{StaticResource Win.Fg}"/>
+            <Setter Property="Padding"
+                    Value="4,3"/>
+        </Style>
+        <Style x:Key="Group"
+                TargetType="TextBlock">
+            <Setter Property="FontWeight"
+                    Value="SemiBold"/>
+            <Setter Property="Foreground"
+                    Value="{StaticResource Accent}"/>
+            <Setter Property="Margin"
+                    Value="0,18,0,6"/>
+        </Style>
+        <Style x:Key="Label"
+                TargetType="TextBlock">
+            <Setter Property="VerticalAlignment"
+                    Value="Center"/>
+            <Setter Property="Foreground"
+                    Value="{StaticResource Win.Fg}"/>
+        </Style>
+        <Style x:Key="Value"
+                TargetType="TextBlock">
+            <Setter Property="VerticalAlignment"
+                    Value="Center"/>
+            <Setter Property="HorizontalAlignment"
+                    Value="Right"/>
+            <Setter Property="Foreground"
+                    Value="{StaticResource Win.FgDim}"/>
+        </Style>
+        <Style x:Key="Dim"
+                TargetType="TextBlock">
+            <Setter Property="Foreground"
+                    Value="{StaticResource Win.FgDim}"/>
+            <Setter Property="TextWrapping"
+                    Value="Wrap"/>
+            <Setter Property="FontSize"
+                    Value="12"/>
+        </Style>
+        <Style x:Key="SliderRow"
+                TargetType="Slider">
+            <Setter Property="VerticalAlignment"
+                    Value="Center"/>
+            <Setter Property="IsMoveToPointEnabled"
+                    Value="True"/>
+        </Style>
+    </Window.Resources>
+
+    <DockPanel Margin="18,14">
+        <StackPanel DockPanel.Dock="Top"
+                Orientation="Horizontal"
+                Margin="0,0,0,10">
+            <RadioButton x:Name="TabBar"
+                    Content="Barra de menu"
+                    GroupName="tab"
+                    IsChecked="True"
+                    Checked="OnTabChecked"
+                    Margin="0,0,16,0"
+                    Foreground="{StaticResource Win.Fg}"/>
+            <RadioButton x:Name="TabItems"
+                    Content="Itens e aparência"
+                    GroupName="tab"
+                    Checked="OnTabChecked"
+                    Margin="0,0,16,0"
+                    Foreground="{StaticResource Win.Fg}"/>
+            <RadioButton x:Name="TabWindows"
+                    Content="Stage Manager e Windows"
+                    GroupName="tab"
+                    Checked="OnTabChecked"
+                    Foreground="{StaticResource Win.Fg}"/>
+        </StackPanel>
+
+        <DockPanel DockPanel.Dock="Bottom"
+                Margin="0,10,0,0">
+            <Button DockPanel.Dock="Right"
+                    Content="Fechar"
+                    Width="86"
+                    Padding="0,5"
+                    IsCancel="True"
+                    IsDefault="True"
+                    Click="OnCloseClick"/>
+            <Button DockPanel.Dock="Left"
+                    Content="Restaurar padrões da barra"
+                    HorizontalAlignment="Left"
+                    Padding="12,5"
+                    Click="OnResetClick"/>
+            <TextBlock Style="{StaticResource Dim}"
+                    Text="As mudanças valem na hora."
+                    VerticalAlignment="Center"
+                    HorizontalAlignment="Center"/>
+        </DockPanel>
+
+        <!-- Aba 1: posição, tamanho, material -->
+        <ScrollViewer x:Name="PanelBar"
+                VerticalScrollBarVisibility="Auto">
+            <StackPanel Margin="0,0,10,0">
+                <TextBlock Style="{StaticResource Group}"
+                        Text="POSIÇÃO E TAMANHO"
+                        Margin="0,4,0,6"/>
+                <CheckBox Content="Barra na borda inferior da tela"
+                        IsChecked="{Binding AtBottom}"/>
+
+                <Grid Margin="0,6">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="150"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="56"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Style="{StaticResource Label}"
+                            Text="Altura"/>
+                    <Slider Grid.Column="1"
+                            Style="{StaticResource SliderRow}"
+                            Minimum="18"
+                            Maximum="64"
+                            Value="{Binding HeightDip}"/>
+                    <TextBlock Grid.Column="2"
+                            Style="{StaticResource Value}"
+                            Text="{Binding HeightDip, StringFormat={}{0:0} px}"/>
+                </Grid>
+                <Grid Margin="0,6">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="150"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="56"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Style="{StaticResource Label}"
+                            Text="Largura"/>
+                    <Slider Grid.Column="1"
+                            Style="{StaticResource SliderRow}"
+                            Minimum="20"
+                            Maximum="100"
+                            Value="{Binding LengthPercent}"/>
+                    <TextBlock Grid.Column="2"
+                            Style="{StaticResource Value}"
+                            Text="{Binding LengthPercent, StringFormat={}{0:0}%}"/>
+                </Grid>
+                <Grid Margin="0,6">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="150"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="56"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Style="{StaticResource Label}"
+                            Text="Folga da borda"/>
+                    <Slider Grid.Column="1"
+                            Style="{StaticResource SliderRow}"
+                            Minimum="0"
+                            Maximum="48"
+                            Value="{Binding GapDip}"/>
+                    <TextBlock Grid.Column="2"
+                            Style="{StaticResource Value}"
+                            Text="{Binding GapDip, StringFormat={}{0:0} px}"/>
+                </Grid>
+                <CheckBox Content="Reservar espaço (janelas maximizadas não passam por baixo)"
+                        IsChecked="{Binding ReserveSpace}"/>
+                <TextBlock Style="{StaticResource Dim}"
+                        Text="Barra mais curta que 100% ou com folga flutua sobre as janelas e não reserva espaço."/>
+                <CheckBox Content="Uma barra em cada monitor"
+                        IsChecked="{Binding AllMonitors}"
+                        Margin="0,10,0,0"/>
+
+                <TextBlock Style="{StaticResource Group}"
+                        Text="FUNDO"/>
+                <Grid Margin="0,4">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="150"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Style="{StaticResource Label}"
+                            Text="Material"/>
+                    <ComboBox Grid.Column="1"
+                            ItemsSource="{Binding Backdrops}"
+                            SelectedIndex="{Binding BackdropIndex}"/>
+                </Grid>
+                <Grid Margin="0,6">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="150"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="56"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Style="{StaticResource Label}"
+                            Text="Intensidade da cor"/>
+                    <Slider Grid.Column="1"
+                            Style="{StaticResource SliderRow}"
+                            Minimum="0"
+                            Maximum="1"
+                            Value="{Binding Opacity}"/>
+                    <TextBlock Grid.Column="2"
+                            Style="{StaticResource Value}"
+                            Text="{Binding Opacity, StringFormat={}{0:P0}}"/>
+                </Grid>
+                <TextBlock Style="{StaticResource Dim}"
+                        Text="Menos cor deixa o desfoque do Windows mais visível. O Windows não permite ajustar a força do desfoque em si; o material só existe no Windows 11 (22H2 ou mais novo)."/>
+
+                <Grid Margin="0,10,0,4">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="150"/>
+                        <ColumnDefinition Width="110"/>
+                        <ColumnDefinition Width="28"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Style="{StaticResource Label}"
+                            Text="Cor do fundo"/>
+                    <TextBox Grid.Column="1"
+                            Text="{Binding BackgroundColor, UpdateSourceTrigger=LostFocus}"
+                            MaxLength="7"/>
+                    <Border Grid.Column="2"
+                            Margin="6,0,0,0"
+                            CornerRadius="4"
+                            BorderBrush="{StaticResource Win.Border}"
+                            BorderThickness="1"
+                            Background="{Binding BackgroundPreview}"/>
+                </Grid>
+                <Grid Margin="0,4">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="150"/>
+                        <ColumnDefinition Width="110"/>
+                        <ColumnDefinition Width="28"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Style="{StaticResource Label}"
+                            Text="Cor do texto"/>
+                    <TextBox Grid.Column="1"
+                            Text="{Binding ForegroundColor, UpdateSourceTrigger=LostFocus}"
+                            MaxLength="7"/>
+                    <Border Grid.Column="2"
+                            Margin="6,0,0,0"
+                            CornerRadius="4"
+                            BorderBrush="{StaticResource Win.Border}"
+                            BorderThickness="1"
+                            Background="{Binding ForegroundPreview}"/>
+                </Grid>
+
+                <TextBlock Style="{StaticResource Group}"
+                        Text="BORDA"/>
+                <Grid Margin="0,4">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="150"/>
+                        <ColumnDefinition Width="110"/>
+                        <ColumnDefinition Width="28"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Style="{StaticResource Label}"
+                            Text="Cor da borda"/>
+                    <TextBox Grid.Column="1"
+                            Text="{Binding BorderColor, UpdateSourceTrigger=LostFocus}"
+                            MaxLength="7"/>
+                    <Border Grid.Column="2"
+                            Margin="6,0,0,0"
+                            CornerRadius="4"
+                            BorderBrush="{StaticResource Win.Border}"
+                            BorderThickness="1"
+                            Background="{Binding BorderPreview}"/>
+                </Grid>
+                <Grid Margin="0,6">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="150"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="56"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Style="{StaticResource Label}"
+                            Text="Espessura"/>
+                    <Slider Grid.Column="1"
+                            Style="{StaticResource SliderRow}"
+                            Minimum="0"
+                            Maximum="4"
+                            Value="{Binding BorderThickness}"/>
+                    <TextBlock Grid.Column="2"
+                            Style="{StaticResource Value}"
+                            Text="{Binding BorderThickness, StringFormat={}{0:0.#} px}"/>
+                </Grid>
+                <Grid Margin="0,6">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="150"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="56"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Style="{StaticResource Label}"
+                            Text="Opacidade da borda"/>
+                    <Slider Grid.Column="1"
+                            Style="{StaticResource SliderRow}"
+                            Minimum="0"
+                            Maximum="1"
+                            Value="{Binding BorderOpacity}"/>
+                    <TextBlock Grid.Column="2"
+                            Style="{StaticResource Value}"
+                            Text="{Binding BorderOpacity, StringFormat={}{0:P0}}"/>
+                </Grid>
+                <CheckBox Content="Cantos arredondados (arredondamento do Windows 11)"
+                        IsChecked="{Binding IsRounded}"/>
+            </StackPanel>
+        </ScrollViewer>
+
+        <!-- Aba 2: itens, tipografia -->
+        <ScrollViewer x:Name="PanelItems"
+                VerticalScrollBarVisibility="Auto"
+                Visibility="Collapsed">
+            <StackPanel Margin="0,0,10,0">
+                <TextBlock Style="{StaticResource Group}"
+                        Text="ELEMENTOS DA BARRA"
+                        Margin="0,4,0,6"/>
+                <CheckBox Content="Logotipo"
+                        IsChecked="{Binding ShowLogo}"/>
+                <CheckBox Content="Nome do aplicativo em foco"
+                        IsChecked="{Binding ShowAppName}"/>
+                <CheckBox Content="Menus do aplicativo"
+                        IsChecked="{Binding ShowMenus}"/>
+                <CheckBox Content="Botão do Stage Manager"
+                        IsChecked="{Binding ShowStageButton}"/>
+                <CheckBox Content="Bateria"
+                        IsChecked="{Binding ShowBattery}"/>
+                <CheckBox Content="Rede"
+                        IsChecked="{Binding ShowNetwork}"/>
+                <CheckBox Content="Pesquisa"
+                        IsChecked="{Binding ShowSearch}"/>
+                <CheckBox Content="Central de controle"
+                        IsChecked="{Binding ShowControlCenter}"/>
+                <CheckBox Content="Relógio"
+                        IsChecked="{Binding ShowClock}"/>
+
+                <TextBlock Style="{StaticResource Group}"
+                        Text="TAMANHOS"/>
+                <Grid Margin="0,6">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="150"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="56"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Style="{StaticResource Label}"
+                            Text="Tamanho dos ícones"/>
+                    <Slider Grid.Column="1"
+                            Style="{StaticResource SliderRow}"
+                            Minimum="10"
+                            Maximum="32"
+                            Value="{Binding IconSize}"/>
+                    <TextBlock Grid.Column="2"
+                            Style="{StaticResource Value}"
+                            Text="{Binding IconSize, StringFormat={}{0:0} px}"/>
+                </Grid>
+                <Grid Margin="0,6">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="150"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="56"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Style="{StaticResource Label}"
+                            Text="Espaçamento"/>
+                    <Slider Grid.Column="1"
+                            Style="{StaticResource SliderRow}"
+                            Minimum="0"
+                            Maximum="24"
+                            Value="{Binding ItemPadding}"/>
+                    <TextBlock Grid.Column="2"
+                            Style="{StaticResource Value}"
+                            Text="{Binding ItemPadding, StringFormat={}{0:0} px}"/>
+                </Grid>
+
+                <TextBlock Style="{StaticResource Group}"
+                        Text="TIPOGRAFIA"/>
+                <Grid Margin="0,4">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="150"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Style="{StaticResource Label}"
+                            Text="Fonte"/>
+                    <ComboBox Grid.Column="1"
+                            IsEditable="True"
+                            ItemsSource="{Binding Fonts}"
+                            Text="{Binding FontFamily, UpdateSourceTrigger=LostFocus}"/>
+                </Grid>
+                <Grid Margin="0,6">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="150"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="56"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Style="{StaticResource Label}"
+                            Text="Tamanho do texto"/>
+                    <Slider Grid.Column="1"
+                            Style="{StaticResource SliderRow}"
+                            Minimum="9"
+                            Maximum="24"
+                            Value="{Binding FontSize}"/>
+                    <TextBlock Grid.Column="2"
+                            Style="{StaticResource Value}"
+                            Text="{Binding FontSize, StringFormat={}{0:0} px}"/>
+                </Grid>
+
+                <TextBlock Style="{StaticResource Group}"
+                        Text="ANIMAÇÕES"/>
+                <CheckBox Content="Animar a barra ao trocar de aplicativo"
+                        IsChecked="{Binding Animations}"/>
+            </StackPanel>
+        </ScrollViewer>
+
+        <!-- Aba 3: Stage Manager e Windows -->
+        <ScrollViewer x:Name="PanelWindows"
+                VerticalScrollBarVisibility="Auto"
+                Visibility="Collapsed">
+            <StackPanel Margin="0,0,10,0">
+                <TextBlock Style="{StaticResource Group}"
+                        Text="STAGE MANAGER"
+                        Margin="0,4,0,6"/>
+                <CheckBox Content="Ativar o Stage Manager (faixa de janelas na lateral esquerda)"
+                        IsChecked="{Binding StageManagerEnabled}"/>
+
+                <TextBlock Style="{StaticResource Group}"
+                        Text="PERSONALIZAÇÃO DO WINDOWS"/>
+                <TextBlock Style="{StaticResource Dim}"
+                        Text="Ajustes do seu usuário, sem administrador. Cada um é confirmado antes de aplicar, tem o valor anterior guardado e pode ser desfeito aqui ou ao desinstalar o GoatDockFinder."/>
+                <ItemsControl ItemsSource="{Binding Tweaks}"
+                        Margin="0,8,0,0">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Grid Margin="0,6">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="90"/>
+                                </Grid.ColumnDefinitions>
+                                <StackPanel>
+                                    <TextBlock Text="{Binding Title}"
+                                            FontWeight="SemiBold"/>
+                                    <TextBlock Style="{StaticResource Dim}"
+                                            Text="{Binding Description}"/>
+                                </StackPanel>
+                                <Button Grid.Column="1"
+                                        Content="{Binding ActionText}"
+                                        VerticalAlignment="Center"
+                                        Padding="0,4"
+                                        Click="OnTweakClick"/>
+                            </Grid>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+                <Button Content="Desfazer todas as alterações do Windows"
+                        HorizontalAlignment="Left"
+                        Padding="12,5"
+                        Margin="0,14,0,0"
+                        Click="OnUndoAllClick"/>
+            </StackPanel>
+        </ScrollViewer>
+    </DockPanel>
+</Window>

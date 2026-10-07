@@ -1,0 +1,136 @@
+<Window x:Class="GoatFinder.Views.MenuBarWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="GoatFinder"
+        Height="28"
+        Width="1280"
+        WindowStyle="None"
+        ResizeMode="NoResize"
+        ShowInTaskbar="False"
+        ShowActivated="False"
+        Topmost="True"
+        Focusable="False"
+        UseLayoutRounding="True"
+        Background="#99121214"
+        Foreground="{DynamicResource Bar.Fg}"
+        FontFamily="{DynamicResource Bar.FontFamily}"
+        FontSize="{DynamicResource Bar.FontSize}">
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVisibility"/>
+    </Window.Resources>
+
+    <DockPanel Margin="6,0"
+            LastChildFill="True">
+        <StackPanel DockPanel.Dock="Right"
+                Orientation="Horizontal"
+                VerticalAlignment="Center">
+            <Button Style="{StaticResource BarButton}"
+                    Click="OnStageClick"
+                    ToolTip="Stage Manager"
+                    Padding="7,0"
+                    Visibility="{Binding ShowStageButton, Converter={StaticResource BoolToVisibility}}">
+                <TextBlock FontFamily="{StaticResource IconFont}"
+                        Text="&#xE8A1;"
+                        FontSize="{Binding GlyphSize}"/>
+            </Button>
+
+            <StackPanel Orientation="Horizontal"
+                    VerticalAlignment="Center"
+                    Margin="4,0"
+                    Visibility="{Binding ShowBattery, Converter={StaticResource BoolToVisibility}}">
+                <TextBlock Text="{Binding BatteryText}"
+                        VerticalAlignment="Center"
+                        Margin="0,0,5,0"/>
+                <TextBlock FontFamily="{StaticResource IconFont}"
+                        Text="{Binding BatteryGlyph}"
+                        FontSize="{Binding IconSize}"
+                        VerticalAlignment="Center"/>
+            </StackPanel>
+
+            <Button Style="{StaticResource BarButton}"
+                    Click="OnQuickSettingsClick"
+                    ToolTip="{Binding NetworkTip}"
+                    Padding="7,0"
+                    Visibility="{Binding ShowNetwork, Converter={StaticResource BoolToVisibility}}">
+                <TextBlock FontFamily="{StaticResource IconFont}"
+                        Text="&#xE701;"
+                        FontSize="{Binding GlyphSize}">
+                    <TextBlock.Style>
+                        <Style TargetType="TextBlock">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding NetworkOnline}"
+                                        Value="False">
+                                    <Setter Property="Opacity"
+                                            Value="0.4"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBlock.Style>
+                </TextBlock>
+            </Button>
+
+            <Button Style="{StaticResource BarButton}"
+                    Click="OnSearchClick"
+                    ToolTip="Pesquisar"
+                    Padding="7,0"
+                    Visibility="{Binding ShowSearch, Converter={StaticResource BoolToVisibility}}">
+                <TextBlock FontFamily="{StaticResource IconFont}"
+                        Text="&#xE721;"
+                        FontSize="{Binding GlyphSize}"/>
+            </Button>
+
+            <Button Style="{StaticResource BarButton}"
+                    Click="OnQuickSettingsClick"
+                    ToolTip="Central de controle"
+                    Padding="7,0"
+                    Visibility="{Binding ShowControlCenter, Converter={StaticResource BoolToVisibility}}">
+                <TextBlock FontFamily="{StaticResource IconFont}"
+                        Text="&#xE713;"
+                        FontSize="{Binding GlyphSize}"/>
+            </Button>
+
+            <Button Style="{StaticResource BarButton}"
+                    Click="OnClockClick"
+                    ToolTip="Notificações e calendário"
+                    Visibility="{Binding ShowClock, Converter={StaticResource BoolToVisibility}}">
+                <TextBlock Text="{Binding Clock}"/>
+            </Button>
+        </StackPanel>
+
+        <StackPanel x:Name="LeftPanel"
+                Orientation="Horizontal"
+                VerticalAlignment="Center">
+            <Button Style="{StaticResource BarButton}"
+                    Click="OnLogoClick"
+                    ToolTip="GoatFinder"
+                    Padding="8,0"
+                    Visibility="{Binding ShowLogo, Converter={StaticResource BoolToVisibility}}">
+                <Image Source="/Assets/goatdockfinder.ico"
+                        Width="{Binding IconSize}"
+                        Height="{Binding IconSize}"/>
+            </Button>
+            <Button Style="{StaticResource BarButton}"
+                    Click="OnAppNameClick"
+                    FontWeight="Bold"
+                    Visibility="{Binding ShowAppName, Converter={StaticResource BoolToVisibility}}">
+                <TextBlock Text="{Binding AppName}"/>
+            </Button>
+            <ItemsControl ItemsSource="{Binding Menus}"
+                    Focusable="False"
+                    Visibility="{Binding ShowMenus, Converter={StaticResource BoolToVisibility}}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Orientation="Horizontal"/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Button Style="{StaticResource BarButton}"
+                                Content="{Binding Header}"
+                                Click="OnMenuClick"/>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </StackPanel>
+    </DockPanel>
+</Window>
